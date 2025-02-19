@@ -39,7 +39,7 @@ class FixtureType(IntEnum):
     """
     Enum for fixture types in robosuite kitchen environments.
     """
-
+    Anything = 0
     COUNTER = 1
     MICROWAVE = 2
     STOVE = 3

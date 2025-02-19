@@ -51,7 +51,7 @@ def register_kitchen_env(target_class):
 
 
 class KitchenEnvMeta(EnvMeta):
-    """Metaclass for registering robocasa environments"""
+    """Metaclass for registering robocasa environments for benchmarking the env"""
 
     def __new__(meta, name, bases, class_dict):
         cls = super().__new__(meta, name, bases, class_dict)
@@ -223,7 +223,7 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
         control_freq=20,
         horizon=1000,
         ignore_done=True,
-        hard_reset=True,
+        hard_reset=True, # * hard reset to update layout and style?
         camera_names="agentview",
         camera_heights=256,
         camera_widths=256,
@@ -335,6 +335,8 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
     def _load_model(self):
         """
         Loads an xml model, puts it in self.model
+        called by robosuite's BaseEnv.reset() with the env.hard_reset = True
+        the layout and the style are read here and the scene is reconstructed as a kitchen arena
         """
         super()._load_model()
 

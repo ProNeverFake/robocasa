@@ -287,7 +287,8 @@ if __name__ == "__main__":
         "--obj_types",
         type=str,
         nargs="+",
-        default=["objaverse"],
+        # default=["objaverse"],
+        default=["aigen"],
         help="(optional) object types. choose among [objaverse, aigen]",
     )
     args = parser.parse_args()

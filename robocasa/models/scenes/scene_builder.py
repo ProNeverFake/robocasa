@@ -95,7 +95,10 @@ def check_syntax(fixture):
 
 def create_fixtures(layout_id, style_id, rng=None):
     """
-    Initializes fixtures based on the given layout yaml file and style type
+    Initializes fixtures based on the given layout yaml file and style type. 
+    
+    
+    - fixtures are essentially MujocoXML from robosuite
 
     Args:
         layout_id (int or LayoutType): layout of the kitchen to load
@@ -105,7 +108,7 @@ def create_fixtures(layout_id, style_id, rng=None):
         rng (np.random.Generator): random number generator used for initializing fixture state
     """
     try:
-        style = int(style)
+        style = int(style) # ! BBBUG what is the style here?
     except:
         pass
 
@@ -121,15 +124,15 @@ def create_fixtures(layout_id, style_id, rng=None):
         arena_config = yaml.safe_load(f)
 
     # contains all fixtures with updated configs
-    arena = list()
+    arena = list() # * list of config-updated fixture groups
 
     # Update each fixture config. First iterate through groups: subparts of the arena that can be
     # rotated and displaced together. example: island group, right group, room group, etc
-    for group_name, group_config in arena_config.items():
+    for group_name, group_config in arena_config.items(): # * group_name: main_group ...
         group_fixtures = list()
         # each group is further divded into similar subcollections of fixtures
         # ex: main group counter accessories, main group top cabinets, etc
-        for k, fixture_list in group_config.items():
+        for k, fixture_list in group_config.items(): # * k: bottom_tow, top_row, ...; fixture_list: name:countermain ...
             # these values are rotations/displacements that are applied to all fixtures in the group
             if k in ["group_origin", "group_z_rot", "group_pos"]:
                 continue
@@ -137,6 +140,7 @@ def create_fixtures(layout_id, style_id, rng=None):
                 raise ValueError('"{}" is not a valid argument for groups'.format(k))
 
             # add suffix to support different groups
+            # add suffix to all the the leaf strings in fixture_list
             for fxtr_config in fixture_list:
                 fxtr_config["name"] += "_" + group_name
                 # update fixture names for alignment, interior objects, etc.
@@ -153,8 +157,8 @@ def create_fixtures(layout_id, style_id, rng=None):
             group_fixtures.extend(fixture_list)
 
         # update group rotation/displacement if necessary
-        if "group_origin" in group_config:
-            for fxtr_config in group_fixtures:
+        if "group_origin" in group_config: # * usually means this is not a wall group but a group "on" the wall
+            for fxtr_config in group_fixtures: # * apply the origin, pos, zrot to all the fixtures in the group
                 # do not update the rotation of the walls/floor
                 if fxtr_config["type"] in ["wall", "floor"]:
                     continue
@@ -177,7 +181,7 @@ def create_fixtures(layout_id, style_id, rng=None):
         check_syntax(fixture_config)
         fixture_name = fixture_config["name"]
 
-        # stack of fixtures, handled separately
+        # stack of fixtures, handled separately (are composites)
         if fixture_config["type"] == "stack":
             stack = FixtureStack(
                 fixture_config,
@@ -189,17 +193,17 @@ def create_fixtures(layout_id, style_id, rng=None):
             )
             fixtures[fixture_name] = stack
             configs[fixture_name] = fixture_config
-            composites.append(fixture_name)
+            composites.append(fixture_name) # * currently only stacks are composites
             continue
 
-        # load style information and update config to include it
+        # * load style information and update config to include it
         default_config = load_style_config(style, fixture_config)
         if default_config is not None:
             for k, v in fixture_config.items():
                 default_config[k] = v
             fixture_config = default_config
 
-        # set fixture type
+        # set fixture type (should be class)
         fixture_config["type"] = FIXTURES[fixture_config["type"]]
 
         # pre-processing for fixture size
@@ -207,16 +211,16 @@ def create_fixtures(layout_id, style_id, rng=None):
         if isinstance(size, list):
             for i in range(len(size)):
                 elem = size[i]
-                if isinstance(elem, str):
+                if isinstance(elem, str): # * the str is the ref fixture, meaning using the same size as the ref fixture in the corresponding dim
                     ref_fxtr = fixtures[elem]
                     size[i] = ref_fxtr.size[i]
 
-        # initialize fixture
+        # * initialize fixture
         fixture = initialize_fixture(fixture_config, fixtures, rng=rng)
         fixtures[fixture_name] = fixture
         configs[fixture_name] = fixture_config
 
-        # update fixture position
+        # update each fixture position
         if fixture_config["type"] not in FIXTURES_INTERIOR.values():
             # relative positioning
             if "align_to" in fixture_config:
@@ -246,14 +250,16 @@ def create_fixtures(layout_id, style_id, rng=None):
             else:
                 # absolute position
                 pos = fixture_config.get("pos", None)
+            # set position
             if pos is not None and type(fixture) not in [Wall, Floor]:
                 fixture.set_pos(pos)
 
     # composites are non-MujocoObjects, must remove
     for composite in composites:
-        del fixtures[composite]
+        del fixtures[composite] # ? what are the composites for?
 
     # update the rotation and postion of each fixture based on their group
+    # * apply the z_rot specified in the fixture config.
     for name, fixture in fixtures.items():
         # check if updates are necessary
         config = configs[name]
@@ -273,6 +279,7 @@ def create_fixtures(layout_id, style_id, rng=None):
             dx_rot = dx * np.cos(z_rot) - dy * np.sin(z_rot)
             dy_rot = dx * np.sin(z_rot) + dy * np.cos(z_rot)
 
+            # the x and y after z-axis rotation
             x_rot = origin[0] + dx_rot
             y_rot = origin[1] + dy_rot
             z = fixture.pos[2]

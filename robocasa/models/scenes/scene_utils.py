@@ -60,7 +60,7 @@ def initialize_fixture(config, cur_fixtures, rng=None):
 
     if "pos" not in config:
         # need position to initialize fixture, adjusted later fo relative positioning
-        config["pos"] = [0.0, 0.0, 0.0]
+        config["pos"] = [0.0, 0.0, 0.0] # ! BBMARK
 
     # update fixture pointers
     for k in ATTACH_ARGS:

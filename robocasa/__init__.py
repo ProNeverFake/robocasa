@@ -304,9 +304,9 @@ from robosuite.robots import ALL_ROBOTS
 
 import mujoco
 
-assert (
-    mujoco.__version__ == "3.2.6"
-), "MuJoCo version must be 3.2.6. Please run pip install mujoco==3.2.6"
+# assert (
+#     mujoco.__version__ == "3.2.6"
+# ), "MuJoCo version must be 3.2.6. Please run pip install mujoco==3.2.6"
 
 import numpy
 
@@ -318,9 +318,14 @@ assert numpy.__version__ in [
 
 import robosuite
 
-assert robosuite.__version__ in [
-    "1.5.0"
-], "robosuite version must be 1.5.0. Please install the correct version"
+print(robosuite.__file__)
+
+# print(robosuite.__file__)
+
+# assert robosuite.__version__ in [
+#     "1.5.0",
+#     "1.5.1", # ! BBMOD
+# ], "robosuite version must be 1.5.0. Please install the correct version"
 
 __version__ = "0.2.0"
 __logo__ = """

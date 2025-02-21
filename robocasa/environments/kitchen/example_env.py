@@ -42,21 +42,16 @@ from robocasa.utils.texture_swap import (
 )
 from robocasa.utils.config_utils import refactor_composite_controller_config
 
-
-REGISTERED_KITCHEN_ENVS = {}
-
-
-def register_kitchen_env(target_class):
-    REGISTERED_KITCHEN_ENVS[target_class.__name__] = target_class
+from bbtoolbox.decorators import bb_disabled
 
 
-class KitchenEnvMeta(EnvMeta):
-    """Metaclass for registering robocasa environments for benchmarking the env"""
+# class KitchenEnvMeta(EnvMeta):
+#     """Metaclass for registering robocasa environments for benchmarking the env"""
 
-    def __new__(meta, name, bases, class_dict):
-        cls = super().__new__(meta, name, bases, class_dict)
-        register_kitchen_env(cls)
-        return cls
+#     def __new__(meta, name, bases, class_dict):
+#         cls = super().__new__(meta, name, bases, class_dict)
+#         register_kitchen_env(cls)
+#         return cls
 
 
 _ROBOT_POS_OFFSETS: dict[str, list[float]] = {
@@ -70,7 +65,9 @@ _ROBOT_POS_OFFSETS: dict[str, list[float]] = {
 }
 
 
-class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
+class ExampleEnv(ManipulationEnv, 
+            #   metaclass=KitchenEnvMeta
+              ):
     """
     Initialized a Base Kitchen environment.
 
@@ -228,7 +225,7 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
         camera_heights=256,
         camera_widths=256,
         camera_depths=False,
-        renderer="mujoco",# ! renderer is set to mujoco
+        renderer="mujoco",
         renderer_config=None,
         init_robot_base_pos=None,
         seed=None,
@@ -281,7 +278,6 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
         for i in range(len(robots)):
             if robots[i] == "PandaMobile":
                 robots[i] = "PandaOmron"
-        assert len(robots) == 1
 
         # intialize cameras
         self._cam_configs = CamUtils.get_robot_cam_configs(robots[0])
@@ -331,12 +327,6 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
             renderer_config=renderer_config,
             seed=seed,
         )
-        
-    def _reload_modified_model(self):
-        """reload the model 
-        """
-        # ! currently do nothing
-        pass
 
     def _load_model(self):
         """
@@ -396,15 +386,13 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
         self.fixtures = {cfg["name"]: cfg["model"] for cfg in self.fixture_cfgs}
 
         # setup scene, robots, objects
-        self.model = ManipulationTask( # * this is Robosuite's Task
+        self.model = ManipulationTask(
             mujoco_arena=self.mujoco_arena,
             mujoco_robots=[robot.robot_model for robot in self.robots],
             mujoco_objects=list(self.fixtures.values()),
         )
-        # import ipdb; ipdb.set_trace()
 
-        # setup fixture locations 
-        # * for object placement
+        # setup fixture locations
         fxtr_placement_initializer = self._get_placement_initializer(
             self.fixture_cfgs, z_offset=0.0
         )
@@ -423,7 +411,6 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
             self._load_model()
             return
         self.fxtr_placements = fxtr_placements
-        
         # Loop through all objects and reset their positions
         for obj_pos, obj_quat, obj in fxtr_placements.values():
             assert isinstance(obj, Fixture)
@@ -476,7 +463,7 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
         # setup object locations
         self.placement_initializer = self._get_placement_initializer(self.object_cfgs)
         object_placements = None
-        for i in range(1): # ! ???
+        for i in range(1):
             try:
                 object_placements = self.placement_initializer.sample(
                     placed_objects=self.fxtr_placements
@@ -493,21 +480,13 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
             return
         self.object_placements = object_placements
 
-    def _create_objects(self, indicated_objects = None):
+    def _create_objects(self):
         """
         Creates and places objects in the kitchen environment.
         Helper function called by _create_objects()
         """
         # add objects
         self.objects = {}
-        
-        if indicated_objects is not None:
-            for obj in indicated_objects:
-                self.objects[obj.name] = obj
-                # self.model.merge_objects([indicated_objects])
-            
-            return
-        
         if "object_cfgs" in self._ep_meta:
             self.object_cfgs = self._ep_meta["object_cfgs"]
             for obj_num, cfg in enumerate(self.object_cfgs):
@@ -606,6 +585,7 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
 
         return object, info
 
+    @bb_disabled
     def _setup_kitchen_references(self):
         """
         setup fixtures (and their references). this function is called within load_model function for kitchens
@@ -620,6 +600,7 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
         if self.hard_reset:
             self._observables = self._setup_observables()
 
+    @bb_disabled
     def compute_robot_base_placement_pose(self, ref_fixture, offset=None):
         """
         steps:
@@ -1534,8 +1515,7 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
                     for name in matches
                     if self._is_fxtr_valid(self.fixtures[name], size)
                 ]
-            # check if any matches found
-            assert len(matches) > 0, "No fixtures found with id: {}".format(id)
+            assert len(matches) > 0
             # sample random key
             key = self.rng.choice(matches)
             return self.fixtures[key]
@@ -1616,38 +1596,3 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
 
         return lang, preposition
 
-
-class KitchenDemo(Kitchen):
-    def __init__(
-        self,
-        init_robot_base_pos="cab_main_main_group",
-        obj_groups="all",
-        num_objs=1,
-        *args,
-        **kwargs,
-    ):
-        self.obj_groups = obj_groups
-        self.num_objs = num_objs
-
-        super().__init__(init_robot_base_pos=init_robot_base_pos, *args, **kwargs)
-
-    def _get_obj_cfgs(self):
-        cfgs = []
-
-        for i in range(self.num_objs):
-            cfgs.append(
-                dict(
-                    name="obj_{}".format(i),
-                    obj_groups=self.obj_groups,
-                    placement=dict(
-                        fixture="counter_main_main_group",
-                        sample_region_kwargs=dict(
-                            ref="cab_main_main_group",
-                        ),
-                        size=(1.0, 1.0),
-                        pos=(0.0, -1.0),
-                    ),
-                )
-            )
-
-        return cfgs

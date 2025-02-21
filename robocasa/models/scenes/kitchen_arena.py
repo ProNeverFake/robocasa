@@ -31,7 +31,7 @@ class KitchenArena(Arena):
             rng=rng,
         )
 
-    def get_fixture_cfgs(self):
+    def get_fixture_cfgs(self) -> list[dict]:
         """
         Returns config data for all fixtures in the arena
 

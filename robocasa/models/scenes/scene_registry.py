@@ -8,7 +8,9 @@ class LayoutType(IntEnum):
     """
     Enum for available layouts in RoboCasa environment
     """
-
+    AIGEN = 100
+    MOD = 101
+    
     ONE_WALL_SMALL = 0
     ONE_WALL_LARGE = 1
     L_SHAPED_SMALL = 2

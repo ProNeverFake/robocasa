@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf8'?>
+<mujoco model="table">
+<compiler meshdir="meshes" texturedir="materials/textures" />
+
+<visual>
+  <headlight ambient="0 0 0" diffuse="0 0 0" specular="1 1 1" />
+  <quality shadowsize="8192" />
+</visual>
+
+<asset>
+  <texture name="table" file="texture.png" type="2d" />
+  <material name="table" texture="table" specular="1" shininess="1" />
+  <mesh name="table" file="model.obj" scale="1 1 1" />
+  <material name="floor" reflectance=".1" />
+</asset>
+
+<worldbody>
+  <light pos=".4 -.4 .3" dir="-2 2 -1.5" diffuse=".6 .6 .6" />
+  <light pos="-.2 -.4 .3" dir="1 2 -1.5" diffuse=".6 .6 .6" />
+  <geom type="plane" size="5 5 .01" rgba="1 1 1 1" material="floor" />
+  <body name="table" pos="0 0 1" euler="0 45 0">
+    <freejoint />
+    <geom type="mesh" material="table" mesh="table" group="2" contype="0" conaffinity="0" />
+    <geom type="mesh" mesh="table" group="3" />
+  </body>
+
+  <light name="light1" pos="0 0 5" dir="0 0 -1" diffuse=".5 .5 .5" />
+
+</worldbody>
+</mujoco>

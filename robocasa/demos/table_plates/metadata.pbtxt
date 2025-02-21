@@ -1,0 +1,35 @@
+model {
+  file: "model.sdf"
+}
+name: "TABLEWARE_SET"
+description: "TABLEWARE SET\nThe set includes 2 plates, 2 bowls, 2 knives, 2 spoons, and 2 forks."
+version: 1
+authors {
+  name: "Google"
+  email: "scanned-objects@google.com"
+}
+legal {
+  copyright: "Copyright 2020 Google LLC."
+  license: "Creative Commons Attribution 4.0 International"
+}
+annotations {
+  key: "brand"
+  value: "PlanToys"
+}
+annotations {
+  key: "mpn"
+  value: "3414"
+}
+annotations {
+  key: "sku"
+  value: "0341401"
+}
+compatibilities {
+  name: "Gazebo"
+  version {
+    major: 11
+  }
+}
+categories {
+  first: "Toys"
+}

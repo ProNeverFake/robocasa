@@ -43,9 +43,7 @@
 
 # from bbtoolbox.decorators import bb_ignore, bb_invoke_ipdb
 
-
-# class ExampleEnv(ManipulationEnv, 
-#               ):
+# class MinimalExampleEnv(ManipulationEnv):
 #     """
 #     Initialized a Base Kitchen environment.
 
@@ -204,12 +202,12 @@
 #         camera_depths=False,
 #         renderer="mujoco",
 #         renderer_config=None,
-#         init_robot_base_pos=None,
+#         # init_robot_base_pos=None,
 #         seed=None,
 #         layout_and_style_ids=None,
 #         layout_ids=None,
 #         style_ids=None,
-#         scene_split=None,  # unsued, for backwards compatibility
+#         # scene_split=None,  # unsued, for backwards compatibility
 #         generative_textures=None,
 #         obj_registries=("objaverse",),
 #         obj_instance_split=None,
@@ -222,7 +220,7 @@
 #         self.fixture_refs = {}
         
         
-#         self.init_robot_base_pos = init_robot_base_pos
+#         # self.init_robot_base_pos = init_robot_base_pos
 
 #         # object placement initializer
 #         self.placement_initializer = placement_initializer
@@ -318,18 +316,18 @@
 #         """
 #         super()._load_model()
 
-#         for robot in self.robots:
-#             if isinstance(robot.robot_model, PandaOmron):
-#                 robot.init_qpos = (
-#                     -0.01612974,
-#                     -1.03446714,
-#                     -0.02397936,
-#                     -2.27550888,
-#                     0.03932365,
-#                     1.51639493,
-#                     0.69615947,
-#                 )
-#                 robot.init_torso_qpos = np.array([0.0])
+#         # for robot in self.robots:
+#         #     if isinstance(robot.robot_model, PandaOmron):
+#         #         robot.init_qpos = (
+#         #             -0.01612974,
+#         #             -1.03446714,
+#         #             -0.02397936,
+#         #             -2.27550888,
+#         #             0.03932365,
+#         #             1.51639493,
+#         #             0.69615947,
+#         #         )
+#         #         robot.init_torso_qpos = np.array([0.0])
 
 #         # determine sample layout and style
 #         if "layout_id" in self._ep_meta and "style_id" in self._ep_meta:
@@ -402,42 +400,9 @@
 #             obj.set_euler(T.mat2euler(T.quat2mat(T.convert_quat(obj_quat, "xyzw"))))
 
 #         # setup internal references related to fixtures
-#         self._setup_kitchen_references()
+#         # self._setup_kitchen_references()
 
 #         # set robot position
-#         if self.init_robot_base_pos is not None:
-#             ref_fixture = self.get_fixture(self.init_robot_base_pos)
-#         else:
-#             fixtures = list(self.fixtures.values())
-#             valid_src_fixture_classes = [
-#                 "CoffeeMachine",
-#                 "Toaster",
-#                 "Stove",
-#                 "Stovetop",
-#                 "SingleCabinet",
-#                 "HingeCabinet",
-#                 "OpenCabinet",
-#                 "Drawer",
-#                 "Microwave",
-#                 "Sink",
-#                 "Hood",
-#                 "Oven",
-#                 "Fridge",
-#                 "Dishwasher",
-#             ]
-#             while True:
-#                 ref_fixture = self.rng.choice(fixtures)
-#                 fxtr_class = type(ref_fixture).__name__
-#                 if fxtr_class not in valid_src_fixture_classes:
-#                     continue
-#                 break
-
-#         # robot_base_pos, robot_base_ori = self.compute_robot_base_placement_pose(
-#         #     ref_fixture=ref_fixture
-#         # )
-#         # robot_model = self.robots[0].robot_model
-#         # robot_model.set_base_xpos(robot_base_pos)
-#         # robot_model.set_base_ori(robot_base_ori)
 
 #         # create and place objects
 #         self._create_objects()
@@ -566,17 +531,6 @@
 #         object = MJCFObject(name=cfg["name"], **object_kwargs)
 
 #         return object, info
-
-#     @bb_ignore(reason="Not used in this environment")
-#     def _setup_kitchen_references(self):
-#         """
-#         setup fixtures (and their references). this function is called within load_model function for kitchens
-#         """
-#         serialized_refs = self._ep_meta.get("fixture_refs", {})
-#         # unserialize refs
-#         self.fixture_refs = {
-#             k: self.get_fixture(v) for (k, v) in serialized_refs.items()
-#         }
 
 #     def _reset_observables(self):
 #         if self.hard_reset:
@@ -1460,7 +1414,7 @@
 #                 return True
 #         return False
 
-#     @bb_invoke_ipdb(reason="testing")
+#     # @bb_ignore(reason="testing")
 #     def get_fixture(self, id, ref=None, size=(0.2, 0.2)):
 #         """
 #         search fixture by id (name, object, or type)
@@ -1533,7 +1487,7 @@
 #             return self.rng.choice(close_fixtures)
 
 #     @bb_ignore(reason="testing")
-#     def register_fixture_ref(self, ref_name, fn_kwargs) -> Fixture:
+#     def register_fixture_ref(self, ref_name, fn_kwargs):
 #         """
 #         Registers a fixture reference for later use. Initializes the fixture
 #         if it has not been initialized yet.
@@ -1580,7 +1534,4 @@
 #             raise ValueError
 
 #         return lang, preposition
-
-
-
 

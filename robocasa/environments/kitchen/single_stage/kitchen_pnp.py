@@ -1,7 +1,9 @@
 from robocasa.environments.kitchen.kitchen import *
+from robocasa.environments.kitchen.example_env import *
+from robocasa.environments.kitchen.minimal_example_env import *
 
-
-class PnP(Kitchen):
+class PnP(Kitchen): # ! BBMOD
+# class PnP(ExampleEnv):
     """
     Class encapsulating the atomic pick and place tasks.
 

@@ -491,6 +491,7 @@ class Kitchen(ManipulationEnv, metaclass=KitchenEnvMeta):
                 print("Could not place objects. Trying again with self._load_model()")
             self._load_model()
             return
+        # * this is for reset internal
         self.object_placements = object_placements
 
     def _create_objects(self, indicated_objects = None):

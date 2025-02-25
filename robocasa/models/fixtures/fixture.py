@@ -86,7 +86,7 @@ class Fixture(MujocoXMLObject):
         self,
         xml,
         name,
-        duplicate_collision_geoms=True,
+        duplicate_collision_geoms=True, # !
         pos=None,
         scale=1,
         size=None,

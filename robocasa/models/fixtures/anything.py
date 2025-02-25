@@ -56,7 +56,7 @@ class Anything(ProcGenFixture):
         xml,
         name,
         size,  # format: [w, d, h]
-        # thickness=0.03,
+        thickness=0.03,
         door_gap=0.003,
         handle_type="bar",
         handle_config=None,

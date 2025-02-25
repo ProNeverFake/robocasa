@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<mujoco model="TABLEWARE_SET">
+    <asset>
+        <!-- 定义模型的网格资源 -->
+        <mesh name="tableware_mesh" file="meshes/model.obj" scale="1 1 1"/>
+    </asset>
+
+    <worldbody>
+        <!-- 定义模型的主体 -->
+        <body name="tableware_body">
+            <!-- 可选：添加关节，例如固定关节 -->
+            <joint name="tableware_joint" type="free" damping="0.01"/>
+
+            <!-- 定义模型的几何形状 -->
+            <geom name="tableware_geom" type="mesh" mesh="tableware_mesh" rgba="0.7 0.7 0.7 1" />
+
+            <!-- 可选：添加视觉元素 -->
+            <site name="tableware_site" size="0.01" rgba="1 0 0 1" pos="0 0 0"/>
+        </body>
+    </worldbody>
+</mujoco>

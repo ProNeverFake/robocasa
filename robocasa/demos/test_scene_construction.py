@@ -69,7 +69,8 @@ def choose_option(
 if __name__ == "__main__":
     # Arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--task", type=str, default="PnPCounterToCab", help="task")
+    # parser.add_argument("--task", type=str, default="PnPCounterToCab", help="task")
+    parser.add_argument("--task", type=str, default="MinimalExampleEnv", help="task")
     parser.add_argument("--layout", type=int, help="kitchen layout (choose number 0-9)")
     parser.add_argument("--style", type=int, help="kitchen style (choose number 0-11)")
     parser.add_argument("--robot", type=str, help="robot", default="PandaOmron")
@@ -121,7 +122,7 @@ if __name__ == "__main__":
     
     # ! predef the layout and style for testing the layout file
     # ! 100 is ai generated, 4 is galley
-    args.layout = 100
+    args.layout = 101
     args.style = 0
 
     # collect demonstrations
@@ -165,6 +166,7 @@ if __name__ == "__main__":
         from robocasa.models.objects.objects import MJCFObject
         
         while True:
+            import ipdb; ipdb.set_trace()
             
             number = input("Enter number ")
             if number == "q":

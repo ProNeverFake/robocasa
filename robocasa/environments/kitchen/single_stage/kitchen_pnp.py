@@ -16,7 +16,7 @@ class PnP(Kitchen):
         self.exclude_obj_groups = exclude_obj_groups
 
         super().__init__(*args, **kwargs)
-
+    
     def _get_obj_cfgs(self):
         raise NotImplementedError
 

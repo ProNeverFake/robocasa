@@ -106,7 +106,6 @@ def collect_human_trajectory(
             env.step(zero_action)
 
     discard_traj = False
-
     # Loop until we get a reset from the input or the task completes
     while True:
         start = time.time()
